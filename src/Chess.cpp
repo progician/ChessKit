@@ -1,6 +1,7 @@
 #include "ChessKit/Chess.h"
 
 #include <algorithm>
+#include <cctype>
 
 
 namespace ChessKit::Chess {
@@ -98,5 +99,51 @@ namespace ChessKit::Chess {
     }
 
     return std::nullopt;
+  }
+
+
+  auto piece_from(char c) -> Piece {
+    switch(std::tolower(c)) {
+      case 'p': return Piece::Pawn;
+      case 'r': return Piece::Rook;
+      case 'n': return Piece::Knight;
+      case 'b': return Piece::Bishop;
+      case 'q': return Piece::Queen;
+      case 'k': return Piece::King;
+    }
+    throw std::invalid_argument("unrecognised SAN notation for piece");
+  }
+
+
+  Position::Position(std::string_view FEN) {
+    auto it = FEN.begin();
+    for (auto rank = 7; rank > 0; --rank) {
+      for (auto file = 0; file < 7; ++file) {
+        if (std::isdigit(*it)) {
+          auto const empty_squares = *it - '0';
+          file += empty_squares - 1;
+          ++it;
+        }
+        else if (std::isalpha(*it)) {
+          auto const player = std::isupper(*it) ? Player::White : Player::Black;
+          auto const piece = piece_from(*it);
+          auto const square = Square{file, rank};
+          pieces_[player][piece][index_from(square)] = true;
+          ++it;
+        }
+        else {
+          throw std::invalid_argument("invalid FEN notation");
+        }
+      }
+      if (*it == '/') {
+        ++it;
+      }
+    }
+
+    if (*(++it) != ' ') {
+      throw std::invalid_argument("invalid FEN notation");
+    }
+
+    player_ = *(++it) == 'w' ? Player::White : Player::Black;
   }
 }

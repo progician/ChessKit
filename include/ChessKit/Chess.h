@@ -29,6 +29,9 @@ namespace ChessKit::Chess {
     int const file;
     int const rank;
   };
+  inline auto operator==(Square const& lhs, Square const& rhs) -> bool {
+    return lhs.file == rhs.file && lhs.rank == rhs.rank;
+  }
 
   constexpr Square a1 = {0, 0};
   constexpr Square a2 = {0, 1};
@@ -93,6 +96,9 @@ namespace ChessKit::Chess {
     Square from;
     Square to;
   };
+  inline auto operator==(Move const& lhs, Move const& rhs) -> bool {
+    return lhs.from == rhs.from && lhs.to == rhs.to;
+  }
 
 
   struct ColouredPiece {
@@ -116,6 +122,7 @@ namespace ChessKit::Chess {
 
   public:
     Position();
+    Position(std::string_view);
 
     auto move(Move) const -> std::optional<Position>;
 
