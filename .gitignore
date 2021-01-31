@@ -4,6 +4,7 @@ deb/
 tidy/
 env/
 .conan/
+.cache/
 .vscode/
 
 __pycache__/
